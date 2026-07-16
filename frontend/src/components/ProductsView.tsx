@@ -684,6 +684,7 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
   const [batchEditState, setBatchEditState] = useState<{ category: string, taxPercent: string, markupPercent: string, freightPercent: string }>({ category: '', taxPercent: '', markupPercent: '', freightPercent: '' });
   const [isProcessingBatch, setIsProcessingBatch] = useState(false);
+  const [showBatchCalculator, setShowBatchCalculator] = useState(false);
 
   // Focus item state
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -2825,6 +2826,7 @@ Código / SKU [espaço/tab] Nome do Produto [espaço/tab] Qtd [espaço/tab] Pre�
           selectedCount={selectedProductIds.size}
           onCancel={() => setSelectedProductIds(new Set())}
           onEditBatch={() => setIsBatchEditModalOpen(true)}
+          onCalculateTaxes={() => setShowBatchCalculator(true)}
         />
       )}
 
@@ -2840,6 +2842,44 @@ Código / SKU [espaço/tab] Nome do Produto [espaço/tab] Qtd [espaço/tab] Pre�
         categories={categories}
         onAddCategory={onAddCategory ? handleCreateCategory : undefined}
       />
+
+      {/* TAX CALCULATOR FOR BATCH UPDATE */}
+      {showBatchCalculator && (
+        <TaxCalculatorModal
+          initialItems={products.filter(p => selectedProductIds.has(p.id)).map(p => ({
+            id: p.id,
+            name: p.name,
+            costPrice: p.costPrice
+          }))}
+          onClose={() => setShowBatchCalculator(false)}
+          onConfirm={async (results) => {
+            // Because onUpdateProduct is async and might take a moment, show processing state
+            setIsProcessingBatch(true);
+            try {
+              for (const result of results) {
+                const product = products.find(p => p.id === result.id);
+                if (product) {
+                  await onUpdateProduct({
+                    ...product,
+                    costPrice: result.custoLiquido,
+                    price: result.precoVenda,
+                    lastSyncDate: new Date().toISOString(),
+                    syncStatus: 'synced'
+                  });
+                }
+              }
+              setSelectedProductIds(new Set());
+            } catch (err: any) {
+              alert("Erro ao atualizar os preços: " + err.message);
+            } finally {
+              setIsProcessingBatch(false);
+              setShowBatchCalculator(false);
+            }
+          }}
+          title="Calculadora de Impostos em Lote"
+          description="Ajuste os valores dos impostos para recalcular os custos líquidos e os preços de venda sugeridos dos itens selecionados."
+        />
+      )}
 
       {/* TAX CALCULATOR FOR INVOICE IMPORT */}
       {showInvoiceCalculator && (
