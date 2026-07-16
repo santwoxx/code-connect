@@ -1,0 +1,6 @@
+{
+  "name": "CentralSync",
+  "description": "Sistema intuitivo para controle de estoque de móveis, fluxo de pagamentos (contas a pagar e receber) e controle de status de entregas com dupla assinatura digital integrada.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,130 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Stock and showroom products",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sku": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "costPrice": { "type": "number" },
+        "currentStock": { "type": "number" },
+        "minStock": { "type": "number" },
+        "description": { "type": "string" },
+        "location": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "colors": { "type": "string" },
+        "material": { "type": "string" },
+        "dimensions": { "type": "string" },
+        "imageUrl": { "type": "string" }
+      },
+      "required": ["id", "sku", "name", "category", "price", "costPrice", "currentStock", "minStock", "createdAt"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Product categories",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["id", "name"]
+    },
+    "StockTransaction": {
+      "title": "StockTransaction",
+      "description": "Log of stock additions and subtractions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "productId": { "type": "string" },
+        "productName": { "type": "string" },
+        "type": { "type": "string", "enum": ["IN", "OUT"] },
+        "quantity": { "type": "number" },
+        "reason": { "type": "string", "enum": ["COMPRA", "VENDA", "PERDA", "RETORNO", "AJUSTE", "OUTROS"] },
+        "description": { "type": "string" },
+        "date": { "type": "string" },
+        "value": { "type": "number" }
+      },
+      "required": ["id", "productId", "productName", "type", "quantity", "reason", "date"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Inflows and outflows payment records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "description": { "type": "string" },
+        "amount": { "type": "number" },
+        "type": { "type": "string", "enum": ["INCOME", "EXPENSE"] },
+        "category": { "type": "string" },
+        "dueDate": { "type": "string" },
+        "paymentDate": { "type": "string" },
+        "status": { "type": "string", "enum": ["PENDING", "PAID", "OVERDUE", "CANCELLED"] },
+        "entityName": { "type": "string" },
+        "notes": { "type": "string" },
+        "associatedProductId": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "description", "amount", "type", "category", "dueDate", "status", "entityName", "createdAt"]
+    },
+    "Delivery": {
+      "title": "Delivery",
+      "description": "Delivery logistics tracking and signatures",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customerName": { "type": "string" },
+        "delivererName": { "type": "string" },
+        "address": { "type": "string" },
+        "itemsDescription": { "type": "string" },
+        "status": { "type": "string", "enum": ["A_ENTREGAR", "ENTREGUE"] },
+        "customerSignature": { "type": "string" },
+        "delivererSignature": { "type": "string" },
+        "scheduledDate": { "type": "string" },
+        "deliveredAt": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "customerName", "delivererName", "address", "itemsDescription", "status", "scheduledDate"]
+    },
+    "AllowedUser": {
+      "title": "AllowedUser",
+      "description": "Validated emails in Firestore that are trusted to login",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string" }
+      },
+      "required": ["email"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Showroom and central inventory items"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Table of furniture categories"
+    },
+    "/transactions/{transactionId}": {
+      "schema": "StockTransaction",
+      "description": "Audited inventory balance logs"
+    },
+    "/payments/{paymentId}": {
+      "schema": "Payment",
+      "description": "Accounts payable and receivable ledger"
+    },
+    "/deliveries/{deliveryId}": {
+      "schema": "Delivery",
+      "description": "Delivery dispatch and signed slips"
+    },
+    "/allowed_users/{email}": {
+      "schema": "AllowedUser",
+      "description": "Validated login access whitelist"
+    }
+  }
+}

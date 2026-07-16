@@ -1,0 +1,17 @@
+{
+  "short_name": "CentralSync",
+  "name": "CentralSync ERP | Gestão de Móveis",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#1e3a8a",
+  "display": "standalone",
+  "orientation": "any"
+}

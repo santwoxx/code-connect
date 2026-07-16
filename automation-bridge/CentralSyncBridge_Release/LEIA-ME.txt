@@ -1,0 +1,64 @@
+========================================================================
+             CENTRALSYNC BRIDGE - INSTRUÇÕES DE EXECUÇÃO
+========================================================================
+
+Este diretório contém a versão compilada e pronta para uso do CentralSync Bridge.
+Você pode mover esta pasta inteira para qualquer computador Windows 10 ou 11.
+
+------------------------------------------------------------------------
+COMO TESTAR NESTE COMPUTADOR:
+------------------------------------------------------------------------
+
+1. Execute o aplicativo dando dois cliques em:
+   -> CentralSyncBridge.exe
+
+2. Abra a interface de simulação:
+   - Na aba "Painel & Logs", clique no botão "Abrir Simulador Alterdata".
+   - Isso abrirá uma janela simulada com os campos do Alterdata.
+
+3. Teste o preenchimento manual:
+   - Na janela principal, vá na aba "Formulário de Teste".
+   - Digite dados fictícios no formulário de Cliente ou de Pedido.
+   - Clique em "Enviar Cliente" ou "Enviar Pedido".
+   - O robô focará automaticamente a janela do simulador e preencherá
+     os campos em tempo real usando as emulações de digitação.
+   - O andamento detalhado será exibido na aba de Logs.
+
+------------------------------------------------------------------------
+INTEGRAÇÃO COM O SISTEMA WEB (CENTRALSYNC):
+------------------------------------------------------------------------
+
+Quando a aplicação estiver aberta, ela escutará chamadas HTTP locais no seu PC.
+Para enviar dados do seu sistema web para o Bridge, faça uma requisição POST
+usando JavaScript do seu frontend para:
+
+URL: http://localhost:7878/
+
+Exemplo de Payload (Cliente):
+{
+  "tipo": "cliente",
+  "nome": "João da Silva",
+  "cpf": "12345678900",
+  "cep": "45600000",
+  "endereco": "Rua A",
+  "numero": "120",
+  "bairro": "Centro",
+  "cidade": "Itabuna",
+  "uf": "BA",
+  "celular": "73999999999"
+}
+
+Exemplo de Payload (Pedido):
+{
+  "tipo": "pedido",
+  "cliente": "João da Silva",
+  "produtos": [
+    {
+      "codigo": "000077",
+      "quantidade": 1,
+      "desconto": 0,
+      "valor": "45,50"
+    }
+  ]
+}
+========================================================================

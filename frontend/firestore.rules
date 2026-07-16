@@ -1,0 +1,263 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net - Allow admins to read/write anything
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+
+    // Helper checking authenticated state
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Hardcoded owner logins (Isaac, Brisas, Lucas, Natan & Caixa Central)
+    function isHardcodedAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email.lower() == 'isaacbomfim.00@gmail.com'
+        || request.auth.token.email.lower() == 'brisasofc@gmail.com'
+        || request.auth.token.email.lower() == 'lucaswelglys@gmail.com'
+        || request.auth.token.email.lower() == 'natandsantosmarinho10@gmail.com'
+        || request.auth.token.email.lower() == 'caixacentralmoveis@gmail.com'
+        || request.auth.token.email.lower() == 'centralmoveis26@gmail.com'
+      );
+    }
+
+    // Resolves role structure if the user document is in allowed_users
+    function getUserData() {
+      return get(/databases/$(database)/documents/allowed_users/$(request.auth.token.email.lower())).data;
+    }
+
+    // Helper: Verify if the user has a specific role
+    function hasRole(roleName) {
+      return isAuthenticated() && (
+        isHardcodedAdmin()
+        || (exists(/databases/$(database)/documents/allowed_users/$(request.auth.token.email.lower()))
+            && getUserData().role == roleName)
+      );
+    }
+
+    // Helper: Verify if the user is a full Admin
+    function isAdmin() {
+      return hasRole('admin') || hasRole('Proprietário / Adm Geral');
+    }
+
+    // Helper: Verify if the user is an Estoquista
+    function isEstoquista() {
+      return (isAuthenticated() && request.auth.token.email.lower() == 'estoquecentralmoveis@gmail.com') || hasRole('estoquista');
+    }
+
+    // Helper: Verify if the user is a Caixa
+    function isCaixa() {
+      return hasRole('caixa');
+    }
+
+    // Helper: Verify if the user is a registered system user (adm or estoquista)
+    function isAllowedUser() {
+      return isAuthenticated() && (
+        isHardcodedAdmin()
+        || exists(/databases/$(database)/documents/allowed_users/$(request.auth.token.email.lower()))
+      );
+    }
+
+    // Helper: Verify if the user is the assigned deliverer of the delivery
+    // Aceita dois vinculos: googleEmail (login Google, hoje sem uso na UI) ou
+    // firebaseUid (login direto usuario/senha com sessao anonima do Firebase).
+    function isAssignedDeliverer(deliveryData) {
+      return isAuthenticated()
+        && deliveryData.get('delivererId', '') != ''
+        && exists(/databases/$(database)/documents/deliverers/$(deliveryData.delivererId))
+        && (
+          get(/databases/$(database)/documents/deliverers/$(deliveryData.delivererId)).data.get('firebaseUid', '') == request.auth.uid
+          || get(/databases/$(database)/documents/deliverers/$(deliveryData.delivererId)).data.get('googleEmail', '').lower() == request.auth.token.email.lower()
+        );
+    }
+
+    // Helper: Verify if the user is the assigned assembler (montador) of the delivery
+    function isAssignedAssembler(deliveryData) {
+      return isAuthenticated()
+        && deliveryData.get('assemblerId', '') != ''
+        && exists(/databases/$(database)/documents/montadores/$(deliveryData.assemblerId))
+        && (
+          get(/databases/$(database)/documents/montadores/$(deliveryData.assemblerId)).data.get('firebaseUid', '') == request.auth.uid
+          || get(/databases/$(database)/documents/montadores/$(deliveryData.assemblerId)).data.get('googleEmail', '').lower() == request.auth.token.email.lower()
+        );
+    }
+
+    // Products rules
+    match /products/{productId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isEstoquista();
+    }
+
+    // Categories rules
+    match /categories/{categoryId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Stock Transactions rules
+    // Write is restricted to admins and estoquistas only.
+    // A vendedor or entregador must never be able to create/edit stock movements.
+    match /transactions/{transactionId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || isEstoquista();
+    }
+
+    // Payments / Caixa rules (Admins and Caixas only - Blocked for estoquista)
+    match /payments/{paymentId} {
+      allow read, write: if isAdmin() || isCaixa();
+    }
+
+    // Deliveries rules
+    match /deliveries/{deliveryId} {
+      allow read: if isAdmin() || isCaixa() || isEstoquista() 
+        || isAssignedDeliverer(resource.data) || isAssignedAssembler(resource.data);
+      allow create: if isAdmin() || isCaixa();
+      allow update: if isAdmin() 
+        || isAssignedDeliverer(resource.data) || isAssignedAssembler(resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Allowed Users list rules
+    match /allowed_users/{email} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Estoquistas rules
+    match /estoquistas/{estoquistaId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Caixas rules
+    match /caixas/{caixaId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Montadores rules
+    match /montadores/{montadorId} {
+      allow read: if isAuthenticated();
+      allow create: if isAdmin();
+      allow update: if isAdmin() || (
+        isAuthenticated() && (
+          resource.data.get('googleEmail', '') == ''
+          || resource.data.get('googleEmail', '').lower() == request.auth.token.email.lower()
+        ) && (
+          request.resource.data.get('googleEmail', '').lower() == request.auth.token.email.lower()
+        ) && (
+          request.resource.data.active == resource.data.active
+        )
+      ) || (
+        // Login direto usuario/senha (sem conta Google): a senha ja foi conferida
+        // no app antes desta escrita -- so libera atualizar firebaseUid e password (para hash), mais nada.
+        isAuthenticated()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['firebaseUid', 'password'])
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Sellers rules
+    // Leitura liberada para usuarios registrados (allowed_users): o fluxo do
+    // vendedor precisa achar o proprio cadastro (currentSeller) apos o login
+    // com a conta Google compartilhada -- sem isso o Showroom falha com
+    // "Nenhum vendedor conectado encontrado" ao gerar orcamento.
+    match /sellers/{sellerId} {
+      allow read: if isAuthenticated();
+      allow create: if isAdmin();
+      allow update: if isAdmin() || (
+        isAuthenticated() && (
+          resource.data.get('googleEmail', '') == ''
+          || resource.data.get('googleEmail', '').lower() == request.auth.token.email.lower()
+        ) && (
+          request.resource.data.get('googleEmail', '').lower() == request.auth.token.email.lower()
+        ) && (
+          request.resource.data.active == resource.data.active
+        )
+      ) || (
+        // Login direto usuario/senha (sem conta Google): a senha ja foi conferida
+        // no app antes desta escrita -- so libera atualizar firebaseUid e password (para hash), mais nada.
+        isAuthenticated()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['firebaseUid', 'password'])
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Deliverers rules
+    match /deliverers/{delivererId} {
+      allow read: if isAuthenticated();
+      allow create: if isAdmin();
+      allow update: if isAdmin() || (
+        isAuthenticated() && (
+          resource.data.get('googleEmail', '') == ''
+          || resource.data.get('googleEmail', '').lower() == request.auth.token.email.lower()
+        ) && (
+          request.resource.data.get('googleEmail', '').lower() == request.auth.token.email.lower()
+        ) && (
+          request.resource.data.active == resource.data.active
+        )
+      ) || (
+        // Login direto usuario/senha (sem conta Google): a senha ja foi conferida
+        // no app antes desta escrita -- so libera atualizar firebaseUid e password (para hash), mais nada.
+        isAuthenticated()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['firebaseUid', 'password'])
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Customers rules
+    match /customers/{customerId} {
+      allow read, write: if isAdmin() || isCaixa() || (isAuthenticated() && !isEstoquista());
+    }
+
+    // Helper: check if a seller has the request user's email
+    function isSellerLinkedToUser(sellerId) {
+      return exists(/databases/$(database)/documents/sellers/$(sellerId))
+        && get(/databases/$(database)/documents/sellers/$(sellerId)).data.get('googleEmail', '').lower() == request.auth.token.email.lower();
+    }
+
+    // Sales rules
+    match /sales/{saleId} {
+      allow read: if isAdmin() || isCaixa() || (isAuthenticated() && !isEstoquista() && isSellerLinkedToUser(resource.data.sellerId));
+      allow create: if isAdmin() || isCaixa() || (isAuthenticated() && !isEstoquista() && isSellerLinkedToUser(request.resource.data.sellerId));
+      allow update: if isAdmin() || isCaixa() || (isAuthenticated() && !isEstoquista() && isSellerLinkedToUser(resource.data.sellerId) && isSellerLinkedToUser(request.resource.data.sellerId));
+      allow delete: if isAdmin() || isCaixa() || (isAuthenticated() && !isEstoquista() && isSellerLinkedToUser(resource.data.sellerId));
+    }
+
+    // Purchase returns rules
+    // Only admins and estoquistas can manage supplier returns
+    match /purchase_returns/{returnId} {
+      allow read: if isAdmin() || isEstoquista();
+      allow write: if isAdmin() || isEstoquista();
+    }
+
+    // Goals rules (Metas de vendedores)
+    // Vendedor le a colecao inteira sem filtro (SellerDashboardView acha a propria
+    // meta no cliente) -- so escreve quem cria/edita metas (admin).
+    match /goals/{goalId} {
+      allow read: if isAdmin() || hasRole('vendedor');
+      allow write: if isAdmin();
+    }
+
+    // Cash registers rules (Abertura/Fechamento de caixa)
+    // Hoje so admin tem caminho de UI ate essa tela (aba financeiro exclui os
+    // demais papeis, incluindo caixa apesar do nome).
+    match /cash_registers/{registerId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Audit logs rules
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+
+    // System Config / Security PIN rules
+    match /system_config/{configId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
