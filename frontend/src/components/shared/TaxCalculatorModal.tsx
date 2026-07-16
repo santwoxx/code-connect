@@ -6,6 +6,7 @@ export interface TaxInputItem {
   id: string;
   produto: string;
   atividade: 'Comercio' | 'Servico';
+  origemIcms: '7' | '12' | '4' | '20.5' | 'OUTRO';
   custoCompra: string;
   ipi: string;
   frete: string;
@@ -61,6 +62,7 @@ export const TaxCalculatorModal: React.FC<TaxCalculatorModalProps> = ({
       id: item.id,
       produto: item.name || 'Produto sem nome',
       atividade: 'Comercio',
+      origemIcms: 'OUTRO',
       custoCompra: item.costPrice > 0 ? item.costPrice.toString() : '',
       ipi: item.ipi ? item.ipi.toString() : '',
       frete: item.frete ? item.frete.toString() : '',
@@ -71,7 +73,28 @@ export const TaxCalculatorModal: React.FC<TaxCalculatorModalProps> = ({
   }, [initialItems]);
 
   const updateRow = (id: string, field: keyof TaxInputItem, value: string) => {
-    setRows(rows.map(r => r.id === id ? { ...r, [field]: value } : r));
+    setRows(rows.map(r => {
+      if (r.id !== id) return r;
+      
+      const newRow = { ...r, [field]: value };
+      
+      // Auto-calculate antecipacao se a origem for conhecida
+      if ((field === 'origemIcms' || field === 'custoCompra') && newRow.origemIcms !== 'OUTRO') {
+        const originRate = parseFloat(newRow.origemIcms);
+        const custo = parseFloat(newRow.custoCompra.replace(',', '.') || '0');
+        
+        if (originRate === 20.5) {
+          newRow.antecipacaoParcial = '0'; // Bahia (Interna)
+        } else {
+          // Diferencial (20.5% - origin) * Base * 0.8 (fator redução)
+          const diff = (20.5 - originRate) / 100;
+          const antecip = custo * diff * 0.8;
+          newRow.antecipacaoParcial = antecip.toFixed(2).replace('.', ',');
+        }
+      }
+      
+      return newRow;
+    }));
   };
 
   const applyToAll = (field: keyof TaxInputItem, value: string) => {
@@ -160,6 +183,7 @@ export const TaxCalculatorModal: React.FC<TaxCalculatorModalProps> = ({
                       <th className="p-3 w-8 text-center">#</th>
                       <th className="p-3 w-48">Produto</th>
                       <th className="p-3 w-28">Atividade</th>
+                      <th className="p-3 w-32">Origem ICMS</th>
                       <th className="p-3 w-24 text-right">Custo Base (R$)</th>
                       <th className="p-3 w-24 text-right">
                         <div>IPI (R$)</div>
@@ -196,6 +220,19 @@ export const TaxCalculatorModal: React.FC<TaxCalculatorModalProps> = ({
                           >
                             <option value="Comercio">Comércio</option>
                             <option value="Servico">Serviço</option>
+                          </select>
+                        </td>
+                        <td className="p-2">
+                          <select 
+                            value={row.origemIcms} 
+                            onChange={(e) => updateRow(row.id, 'origemIcms', e.target.value)}
+                            className="w-full border-slate-200 rounded text-xs px-2 py-1.5 bg-slate-50 focus:ring-1 focus:ring-indigo-500"
+                          >
+                            <option value="OUTRO">Manual / Outros</option>
+                            <option value="7">Sul/Sudeste (7%)</option>
+                            <option value="12">NE/Norte/CO (12%)</option>
+                            <option value="20.5">Dentro da BA (20,5%)</option>
+                            <option value="4">Importado (4%)</option>
                           </select>
                         </td>
                         <td className="p-2">

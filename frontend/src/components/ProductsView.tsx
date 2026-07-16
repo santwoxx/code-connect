@@ -2850,8 +2850,7 @@ Código / SKU [espaço/tab] Nome do Produto [espaço/tab] Qtd [espaço/tab] Pre�
             costPrice: item.costPrice,
             ipi: item.ipi,
             frete: item.frete,
-            desconto: item.desconto,
-            creditoIcms: item.creditoIcms
+            desconto: item.desconto
           }))}
           onClose={() => setShowInvoiceCalculator(false)}
           onConfirm={(results: TaxResultItem[]) => {
