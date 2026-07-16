@@ -168,6 +168,7 @@ export interface Sale {
   status: 'COMPLETED' | 'PENDING' | 'CANCELLED';
   paymentMethod?: PaymentMethod; // Método de pagamento quando faturado
   installments?: number; // Quantidade de parcelas se for cartão
+  paymentSplits?: any[]; // Divisão de pagamentos
   notes?: string;
   deliveryType?: 'RETIRADA' | 'ENVIAR';
   shippingValue?: number;

@@ -2095,8 +2095,8 @@ export function ShowroomView({
                         errors.seller = "Vendedor selecionado inválido.";
                       }
                     } else if (userRole === 'Proprietário / Adm Geral' || userRole === 'admin' || userRole === 'caixa') {
-                      finalSellerId = user?.uid || 'admin';
-                      finalSellerName = user?.displayName || 'Administrador';
+                      finalSellerId = 'admin';
+                      finalSellerName = 'Administrador';
                     } else {
                       errors.seller = "Você deve atribuir esta venda a um vendedor.";
                     }
@@ -2898,8 +2898,8 @@ export function ShowroomView({
                       if (foundSeller) { finalSellerId = foundSeller.id; finalSellerName = foundSeller.name; }
                       else errors.seller = "Vendedor inválido.";
                     } else if (userRole === 'Proprietário / Adm Geral' || userRole === 'admin' || userRole === 'caixa') {
-                      finalSellerId = user?.uid || 'admin';
-                      finalSellerName = user?.displayName || 'Administrador';
+                      finalSellerId = 'admin';
+                      finalSellerName = 'Administrador';
                     } else {
                       errors.seller = "Atribua a venda a um vendedor.";
                     }

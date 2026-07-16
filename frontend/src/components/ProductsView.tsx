@@ -812,7 +812,8 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
     needsAssembly: false,
     assemblyPercent: '0',
     taxPercent: '0',
-    markupPercent: '0'
+    markupPercent: '0',
+    freightPercent: '0'
   });
 
   // Edit Product Form state
@@ -1010,7 +1011,8 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
       needsAssembly: false,
       assemblyPercent: '0',
       taxPercent: '0',
-      markupPercent: '0'
+      markupPercent: '0',
+      freightPercent: '0'
     });
     setIsAddModalOpen(false);
   };

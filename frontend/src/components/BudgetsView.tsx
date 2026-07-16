@@ -1349,7 +1349,7 @@ export const BudgetsView: React.FC<BudgetsViewProps> = ({
                                   )}
                                   <div className="text-left">
                                     <span className="font-bold text-slate-800 block leading-tight">{p.name}</span>
-                                    <span className="text-[10px] text-slate-500 font-mono">SKU: {p.sku} | Estoque: <span className={p.stock > 0 ? "text-emerald-600 font-bold" : "text-rose-600 font-bold"}>{p.stock}</span></span>
+                                    <span className="text-[10px] text-slate-500 font-mono">SKU: {p.sku} | Estoque: <span className={p.currentStock > 0 ? "text-emerald-600 font-bold" : "text-rose-600 font-bold"}>{p.currentStock}</span></span>
                                   </div>
                                 </div>
                                 <span className="font-bold text-slate-900 font-mono shrink-0 pl-2">{formatCurrency(p.price)}</span>
