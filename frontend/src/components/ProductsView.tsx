@@ -461,6 +461,52 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
 
   function parseImportText(text: string): ParsedProductRow[] {
     let cleanedText = text;
+    
+    // Check for Alterdata Multiline Format
+    if (text.match(/^\d{8}\s+\d{1,3}\/\d{2,3}\s+\d{4}\s+/m)) {
+      const lines = text.split('\n');
+      const items: ParsedProductRow[] = [];
+      let currentItem: Partial<ParsedProductRow> | null = null;
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        // Matches the NCM line: NCM (8 digits) | CST (0/00) | CFOP (4 digits) | Unit | Quantity | Cost
+        const valuesMatch = line.match(/^(\d{8})\s+\d{1,3}\/\d{2,3}\s+\d{4}\s+([A-Z]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)/);
+        if (valuesMatch) {
+          if (currentItem && currentItem.sku && currentItem.name) {
+            currentItem.ncm = valuesMatch[1];
+            currentItem.unit = valuesMatch[2];
+            currentItem.currentStock = parseFloat(valuesMatch[3].replace(/\./g, '').replace(',', '.')) || 0;
+            currentItem.costPrice = parseFloat(valuesMatch[4].replace(/\./g, '').replace(',', '.')) || 0;
+            currentItem.price = currentItem.costPrice * 1.5;
+            currentItem.minPrice = currentItem.costPrice;
+            currentItem.category = guessCategory(currentItem.name);
+            currentItem.selected = true;
+            
+            items.push(currentItem as ParsedProductRow);
+            currentItem = null;
+          }
+        } else {
+          if (!currentItem) {
+            const codeMatch = line.match(/^([\d.]+)\s+(.*)/);
+            if (codeMatch) {
+              currentItem = {
+                sku: codeMatch[1],
+                name: codeMatch[2]
+              };
+            } else {
+               currentItem = { sku: 'UNKNOWN', name: line };
+            }
+          } else {
+            currentItem.name += ' ' + line;
+          }
+        }
+      }
+      if (items.length > 0) return items;
+    }
+
     // Pre-process: if the text is single-line (or very few lines) but contains multiple SKUs, split them by inserting newlines!
     if (!text.includes('\n') || text.split('\n').length < 3) {
       cleanedText = text.replace(/\s+(\d{6})\b/g, '\n$1');
