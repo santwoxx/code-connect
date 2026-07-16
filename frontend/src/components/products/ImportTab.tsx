@@ -56,7 +56,6 @@ export function ImportTab({
   parseImportText
 }: ImportTabProps) {
   const [showTaxCalculator, setShowTaxCalculator] = React.useState(false);
-  if (!isActive) return null;
 
   // Compute stats and sync statuses
   const { augmentedProducts, stats } = useMemo(() => {
@@ -115,6 +114,8 @@ export function ImportTab({
       }
     };
   }, [importProducts, products]);
+
+  if (!isActive) return null;
 
   return (
     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col font-sans text-left space-y-4">
