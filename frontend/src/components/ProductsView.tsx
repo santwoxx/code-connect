@@ -25,7 +25,8 @@ import {
   FileSpreadsheet,
   Package,
   Database,
-  DollarSign
+  DollarSign,
+  Calculator
 } from 'lucide-react';
 import { Product, Category, StockTransaction } from '../types';
 import { uploadProductImage } from '../firebase';
