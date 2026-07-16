@@ -258,6 +258,55 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
   }
 
   function parseTextInvoice(text: string): ParsedInvoiceItem[] {
+    // If it looks like a DANFE copy-paste
+    if (text.includes('DADOS DOS PRODUTOS') && text.includes('CÓDIGO') && text.includes('NCM')) {
+      // Find where the table header ends, usually at "ALÍQ. IPI" or "ALIQ. IPI"
+      const headerEndIndex = text.indexOf('IPI');
+      if (headerEndIndex !== -1) {
+        // We look for the last 'IPI' in the header area, or just split the whole text into a single line
+        const singleLineText = text.replace(/\n/g, ' ');
+        // Regex matches standard DANFE columns
+        const regex = /(\S+)\s+([\s\S]+?)\s+(\d{8})\s+([^\s]+)\s+(\d{4})\s+([A-Za-z]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)/g;
+        
+        const items: ParsedInvoiceItem[] = [];
+        let match;
+        while ((match = regex.exec(singleLineText)) !== null) {
+          // Check if SKU is reasonable (not words like "DADOS", "VALOR")
+          const sku = match[1];
+          if (sku.toUpperCase() === 'DADOS' || sku.toUpperCase() === 'CÓDIGO' || sku.toUpperCase() === 'VALOR') {
+            continue; // Skip false positive from header
+          }
+
+          // Clean up the description just in case it swallowed header words
+          let name = match[2].trim();
+          const lastHeaderIndex = name.lastIndexOf('IPI');
+          if (lastHeaderIndex !== -1) {
+            // Usually if it matched header, it means it started matching too early
+            name = name.substring(lastHeaderIndex + 3).trim();
+          }
+
+          const quantity = parseFloat(match[7].replace(/\./g, '').replace(',', '.')) || 1;
+          const vUnit = parseFloat(match[8].replace(/\./g, '').replace(',', '.')) || 0;
+          const vIpi = parseFloat(match[13].replace(/\./g, '').replace(',', '.')) || 0;
+          const vDesc = parseFloat(match[10].replace(/\./g, '').replace(',', '.')) || 0;
+          const vIcms = parseFloat(match[12].replace(/\./g, '').replace(',', '.')) || 0;
+          
+          items.push({
+            sku,
+            name,
+            quantity: Math.max(1, quantity),
+            costPrice: vUnit,
+            unit: match[6],
+            ipi: vIpi,
+            desconto: vDesc,
+            creditoIcms: vIcms
+          });
+        }
+        
+        if (items.length > 0) return items;
+      }
+    }
+
     const parsed = parseImportText(text);
     return parsed.map(p => ({
       sku: p.sku,
