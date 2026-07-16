@@ -31,6 +31,10 @@ interface TaxCalculatorModalProps {
     id: string;
     name: string;
     costPrice: number;
+    ipi?: number;
+    frete?: number;
+    desconto?: number;
+    creditoIcms?: number;
   }[];
   onClose: () => void;
   onConfirm: (results: TaxResultItem[]) => void;
@@ -58,10 +62,10 @@ export const TaxCalculatorModal: React.FC<TaxCalculatorModalProps> = ({
       produto: item.name || 'Produto sem nome',
       atividade: 'Comercio',
       custoCompra: item.costPrice > 0 ? item.costPrice.toString() : '',
-      ipi: '',
-      frete: '',
-      desconto: '',
-      creditoIcms: '',
+      ipi: item.ipi ? item.ipi.toString() : '',
+      frete: item.frete ? item.frete.toString() : '',
+      desconto: item.desconto ? item.desconto.toString() : '',
+      creditoIcms: item.creditoIcms ? item.creditoIcms.toString() : '',
       antecipacaoParcial: ''
     })));
   }, [initialItems]);

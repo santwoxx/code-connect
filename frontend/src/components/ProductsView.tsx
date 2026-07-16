@@ -57,6 +57,10 @@ interface ParsedInvoiceItem {
   quantity: number;
   costPrice: number;
   unit: string;
+  ipi?: number;
+  frete?: number;
+  desconto?: number;
+  creditoIcms?: number;
 }
 
 interface ReviewInvoiceItem {
@@ -69,6 +73,10 @@ interface ReviewInvoiceItem {
   unit: string;
   isExisting: boolean;
   existingProduct?: Product;
+  ipi?: number;
+  frete?: number;
+  desconto?: number;
+  creditoIcms?: number;
 }
 
 export const ProductsView: React.FC<ProductsViewProps> = ({
@@ -219,12 +227,30 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
       const quantity = Math.round(parseFloat(qtyText));
       const costPrice = parseFloat(costText);
       
+      const imposto = det.getElementsByTagName("imposto")[0];
+      let vICMS = 0;
+      let vIPI = 0;
+      if (imposto) {
+        const icmsNode = imposto.getElementsByTagName("vICMS")[0];
+        if (icmsNode) vICMS = parseFloat(icmsNode.textContent || '0');
+        
+        const ipiNode = imposto.getElementsByTagName("vIPI")[0];
+        if (ipiNode) vIPI = parseFloat(ipiNode.textContent || '0');
+      }
+      
+      const vFrete = parseFloat(prod.getElementsByTagName("vFrete")[0]?.textContent || '0');
+      const vDesc = parseFloat(prod.getElementsByTagName("vDesc")[0]?.textContent || '0');
+      
       items.push({
         sku: sku.trim(),
         name: name.trim().toUpperCase(),
         quantity,
         costPrice,
-        unit: unit.trim().toUpperCase()
+        unit: unit.trim().toUpperCase(),
+        ipi: vIPI,
+        frete: vFrete,
+        desconto: vDesc,
+        creditoIcms: vICMS
       });
     }
     
@@ -309,7 +335,11 @@ export const ProductsView: React.FC<ProductsViewProps> = ({
         category,
         unit: item.unit || 'UN',
         isExisting,
-        existingProduct
+        existingProduct,
+        ipi: item.ipi,
+        frete: item.frete,
+        desconto: item.desconto,
+        creditoIcms: item.creditoIcms
       };
     });
     
@@ -2817,7 +2847,11 @@ Código / SKU [espaço/tab] Nome do Produto [espaço/tab] Qtd [espaço/tab] Pre�
           initialItems={reviewInvoiceItems.map(item => ({
             id: item.sku,
             name: item.name,
-            costPrice: item.costPrice
+            costPrice: item.costPrice,
+            ipi: item.ipi,
+            frete: item.frete,
+            desconto: item.desconto,
+            creditoIcms: item.creditoIcms
           }))}
           onClose={() => setShowInvoiceCalculator(false)}
           onConfirm={(results: TaxResultItem[]) => {
