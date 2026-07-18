@@ -14,16 +14,23 @@ function App() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
   const [showStickyCta, setShowStickyCta] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    // Sticky CTA appears after the visitor scrolls past the hero
-    const handleScroll = () => setShowStickyCta(window.scrollY > 600);
+    // Sticky CTA appears only after the hero (and its own CTA) leaves the viewport
+    const handleScroll = () => setShowStickyCta(window.scrollY > window.innerHeight);
+    // PreviewModal dispatches 'cs:modal' so the sticky CTA hides while it is open
+    const handleModal = (e) => setModalOpen(Boolean(e.detail?.open));
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('cs:modal', handleModal);
 
     // Check if mobile to disable intensive mouse tracking
     if (window.innerWidth < 768) {
       setIsMobile(true);
-      return () => window.removeEventListener('scroll', handleScroll);
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('cs:modal', handleModal);
+      };
     }
 
     const handleMouseMove = (e) => {
@@ -34,6 +41,7 @@ function App() {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('cs:modal', handleModal);
     };
   }, []);
 
@@ -53,9 +61,9 @@ function App() {
         />
       )}
 
-      {/* Sticky checkout CTA — always one click away, hidden under open modals (zIndex 9990 < 9999) */}
+      {/* Sticky checkout CTA — hidden while a preview modal is open */}
       <AnimatePresence>
-        {showStickyCta && (
+        {showStickyCta && !modalOpen && (
           <motion.a
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}

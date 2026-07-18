@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { CHECKOUT_URL } from '../config';
 import PreviewModal from './PreviewModal';
@@ -91,15 +91,6 @@ const ProjectCard = ({ proj, i, setActiveProject }) => {
 
 const Portfolio = () => {
   const [activeProject, setActiveProject] = useState(null);
-
-  // Block body scroll when modal is open
-  useEffect(() => {
-    if (activeProject) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-  }, [activeProject]);
 
   const projects = [
     { name: 'The Prime', img: '/screenshots/prime.jpg', color: '#ff3366' },

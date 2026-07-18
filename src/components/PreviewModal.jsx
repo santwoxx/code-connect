@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CHECKOUT_URL } from '../config';
 
 // Preview navegável por screenshot: o visitante explora o site inteiro rolando a
 // imagem, sem iframe e sem nenhuma URL do projeto exposta no código ou na tela.
 const PreviewModal = ({ project, onClose }) => {
+  // Trava o scroll da página e avisa o App (que esconde o CTA fixo) enquanto aberto
+  useEffect(() => {
+    const open = Boolean(project);
+    document.body.style.overflow = open ? 'hidden' : 'auto';
+    window.dispatchEvent(new CustomEvent('cs:modal', { detail: { open } }));
+    return () => {
+      document.body.style.overflow = 'auto';
+      window.dispatchEvent(new CustomEvent('cs:modal', { detail: { open: false } }));
+    };
+  }, [project]);
+
   return (
     <AnimatePresence>
       {project && (

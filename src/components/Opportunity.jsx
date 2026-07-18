@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { CHECKOUT_URL } from '../config';
 import PreviewModal from './PreviewModal';
@@ -76,14 +76,6 @@ const MiniPreview = ({ proj, delay = 0, duration = 20, reverse = false, onClick 
 
 const Opportunity = () => {
   const [activeProject, setActiveProject] = useState(null);
-
-  useEffect(() => {
-    if (activeProject) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-  }, [activeProject]);
 
   const projects = {
     prime: { name: 'The Prime', img: '/screenshots/prime.jpg', color: '#ff3366' },
