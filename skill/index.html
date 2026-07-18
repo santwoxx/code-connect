@@ -1,0 +1,1392 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Se torne um Web Designer do Futuro</title>
+
+
+  <!-- Preconnect only to domains we actually need on first load -->
+  <link rel="preconnect" href="https://code.iconify.design">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="https://player-vz-94f8d548-9de.tv.pandavideo.com.br">
+  <link rel="preconnect" href="https://player-vz-94f8d548-9de.tv.pandavideo.com.br">
+  <link rel="dns-prefetch" href="https://player.pandavideo.com.br">
+  <link rel="preconnect" href="https://player.pandavideo.com.br">
+
+  <!-- Preload critical fonts (self-hosted, no Google Fonts blocking request) -->
+  <link rel="preload" href="ASSETS/NeuePowerTrial/NeuePowerTrial-Medium.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="preload" href="LOGO.svg" as="image">
+  <link rel="preload" href="./ASSETS/FRAMES/frame_0042.webp" as="image">
+
+  <!-- Self-hosted Google Fonts (non-blocking) -->
+  <link rel="preload" href="css/fonts.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet" href="ASSETS/fonts/fonts.css">
+  </noscript>
+
+  <style>
+    :root {
+      --color-background: #0A0A0A;
+      --color-accent: #FF6600;
+      --font-primary: 'Inter', -apple-system, sans-serif;
+      --font-display: 'Neue Power Trial', sans-serif;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-primary);
+      background: var(--color-background);
+      color: #E5E5E5;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      padding: 24px 0;
+      background: transparent;
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1340px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .nav-logo-img {
+      height: 34px;
+      width: auto;
+      display: block;
+    }
+
+    .desktop-nav {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 32px;
+      border-radius: 9999px;
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-link {
+      font-size: 14px;
+      font-weight: 500;
+      color: #E5E5E5;
+      text-decoration: none;
+    }
+
+    .hero {
+      position: relative;
+      height: 100vh;
+      background: #0A0A0A;
+      overflow: hidden;
+    }
+
+    .hero-sticky-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 120px;
+    }
+
+    .hero-title-container {
+      position: absolute;
+      top: 14%;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-title-small {
+      font-family: var(--font-display);
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.4em;
+      color: #FFF;
+      line-height: 1;
+    }
+
+    .hero-title-big {
+      font-family: var(--font-display);
+      font-size: clamp(80px, 20vw, 275px);
+      font-weight: 500;
+      line-height: 0.99;
+      background: radial-gradient(circle, #FF6F00 0%, #6100B7 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .loading-canvas {
+      opacity: 0;
+    }
+
+    /* Mobile-specific internal overrides to prevent FOUC glitch */
+    @media (max-width: 768px) {
+      .hero {
+        height: 100dvh !important;
+        min-height: 100dvh !important;
+      }
+
+      .hero-sticky-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        padding-top: 80px !important;
+      }
+
+      .hero-title-container {
+        position: relative !important;
+        top: 0 !important;
+        margin-bottom: 20px !important;
+      }
+
+      .hero-photo-wrapper {
+        position: absolute !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      .hero-photo,
+      .hero-placeholder {
+        width: 160% !important;
+        height: auto !important;
+        position: absolute !important;
+        top: auto !important;
+        bottom: -2px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        object-position: bottom center !important;
+      }
+    }
+
+    /* Vibe Particles (3) Integration */
+    .background-glow {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background: radial-gradient(ellipse at top, rgba(255, 102, 0, 0.15) 0%, rgba(97, 0, 183, 0.05) 50%, rgba(10, 10, 10, 1) 100%);
+      pointer-events: none;
+      mix-blend-mode: overlay;
+    }
+
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.2;
+      background-image: radial-gradient(#ffffff 1px, transparent 1px);
+      background-size: 40px 40px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #tsparticles {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* ════ FAQ SECTION (INLINED TO PREVENT CACHE ERRORS) ════ */
+    #faq .faq-item {
+      position: relative;
+      background: rgba(255, 255, 255, 0.02) !important;
+      border: 1px solid transparent !important;
+      border-radius: 12px;
+      transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      isolation: isolate;
+      margin-bottom: 12px;
+    }
+
+    #faq .faq-item:hover {
+      background: rgba(255, 255, 255, 0.04) !important;
+      transform: translateY(-2px);
+    }
+
+    #faq .faq-item.active {
+      background: rgba(255, 255, 255, 0.03) !important;
+      box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.6);
+      transform: scale(1.02);
+    }
+
+    #faq .faq-question {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px 40px;
+      background: transparent !important;
+      border: none !important;
+      cursor: pointer;
+      text-align: left;
+      outline: none !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      color: #ffffff !important;
+      position: relative;
+      z-index: 5;
+    }
+
+    #faq .question-text {
+      font-size: 20px;
+      font-weight: 500;
+      color: #ffffff !important;
+      padding-right: 24px;
+      transition: color 0.3s ease;
+    }
+
+    #faq .faq-item.active .question-text {
+      color: #FF6600 !important;
+    }
+
+    #faq .faq-icon {
+      font-size: 24px;
+      color: #A3A3A3;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #faq .faq-item.active .faq-icon {
+      transform: rotate(180deg);
+      color: #FF6600 !important;
+    }
+
+    #faq .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      position: relative;
+      z-index: 5;
+    }
+
+    #faq .answer-inner {
+      padding: 0 40px 32px 40px;
+    }
+
+    #faq .answer-inner p {
+      font-size: 16px;
+      color: #A3A3A3;
+      line-height: 1.6;
+    }
+
+    #faq .faq-marker-plus {
+      position: absolute;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.2);
+      user-select: none;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    #faq .faq-marker-plus.top-left {
+      top: 20px;
+      left: 20px;
+    }
+
+    #faq .faq-marker-plus.top-right {
+      top: 20px;
+      right: 20px;
+    }
+
+    #faq .faq-marker-plus.bottom-left {
+      bottom: 20px;
+      left: 20px;
+    }
+
+    #faq .faq-marker-plus.bottom-right {
+      bottom: 20px;
+      right: 20px;
+    }
+
+    /* Border Beam Animation */
+    #faq .faq-border-beam {
+      position: absolute;
+      inset: -1px;
+      background: conic-gradient(from 0deg at 50% 50%, #FF6600 0deg, #6100B7 45deg, transparent 180deg, transparent 315deg, #FF6600 360deg);
+      animation: borderTurn 4s linear infinite;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 1;
+    }
+
+    #faq .faq-item.active .faq-border-beam {
+      opacity: 1;
+    }
+
+    #faq .faq-mask {
+      position: absolute;
+      inset: 1px;
+      background: #0A0A0A;
+      border-radius: 11px;
+      z-index: 2;
+    }
+
+    .price-promo-date {
+      font-size: 11px;
+      color: #FF3131;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-top: 8px;
+      text-align: center;
+      opacity: 0.9;
+    }
+  </style>
+
+  <link rel="stylesheet" href="css/style.min.css">
+  <!-- Lenis + scroll-animation: critical for hero animation (must load in order) -->
+  <script async="" src="https://www.clarity.ms/tag/w0s4z28bte"></script><script async="" src="js/fbevents.js"></script><script src="js/lenis.min.js" defer=""></script>
+  <script src="js/scroll-animation.min.js" defer=""></script>
+  <script src="js/ui-interactions.min.js" defer=""></script>
+  <!-- Panda Video Player API loaded lazily by facade observer -->
+  <!-- Non-critical: lazy load after first paint -->
+  <script>
+    (function () {
+      function loadAfterPaint() {
+        var ic = document.createElement('script');
+        ic.src = 'https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js';
+        document.body.appendChild(ic);
+      }
+      function loadParticles() {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js';
+        s.onload = function () {
+          var p = document.createElement('script');
+          p.src = 'particles-config.js?v=2.0';
+          document.body.appendChild(p);
+        };
+        document.body.appendChild(s);
+      }
+      if (window.requestIdleCallback) {
+        requestIdleCallback(loadAfterPaint);
+        requestIdleCallback(function () { setTimeout(loadParticles, 2000); });
+      } else {
+        setTimeout(loadAfterPaint, 100);
+        setTimeout(loadParticles, 3000);
+      }
+    })();
+  </script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-3CDT1SMFN3"></script></head>
+
+<body>
+
+  <div class="nav-menu-wrapper" id="mobile-menu-overlay">
+    <ul class="nav-menu">
+      <li><a href="#inicio" class="nav-link">Ínicio</a></li>
+      <li><a href="#conteudo" class="nav-link">Conteúdo</a></li>
+      <li><a href="#preco" class="nav-link">Preço</a></li>
+      <li><a href="#bonus" class="nav-link">Bônus</a></li>
+    </ul>
+  </div>
+
+  <!-- Global Visual Effects -->
+  <div class="elite-beams" id="elite-beams">
+    <div class="beam beam-1"></div>
+    <div class="beam beam-2"></div>
+    <div class="beam beam-3"></div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="nav-logo">
+        <img src="images/LOGO.svg" alt="Designer do Futuro" class="nav-logo-img" width="120" height="34" fetchpriority="high">
+      </a>
+
+      <div class="nav-menu-wrapper desktop-nav">
+        <ul class="nav-menu">
+          <li><a href="#inicio" class="nav-link">Ínicio</a></li>
+          <li><a href="#conteudo" class="nav-link">Conteúdo</a></li>
+          <li><a href="#preco" class="nav-link">Preço</a></li>
+          <li><a href="#bonus" class="nav-link">Bônus</a></li>
+        </ul>
+      </div>
+
+      <button class="nav-toggle" aria-label="Abrir menu">
+        <iconify-icon icon="solar:hamburger-menu-linear" class="icon-open"></iconify-icon>
+        <iconify-icon icon="solar:close-circle-linear" class="icon-close"></iconify-icon>
+      </button>
+
+      <a href="#preco" class="nav-cta-aura">
+        <span class="aura-spin-bg"></span>
+        <span class="aura-inner">
+          Quero garantir minha vaga
+          <iconify-icon icon="solar:play-circle-linear" width="18"></iconify-icon>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- 1. HERO SECTION -->
+  <section class="hero" id="inicio">
+    <div class="background-glow"></div>
+    <div class="grid-overlay"></div>
+    <div id="tsparticles"></div>
+    <div class="hero-sticky-container">
+      <!-- Redundant elements commented out to prioritize Vibe Particles effect -->
+      <!-- <div class="hero-grid"></div> -->
+      <!-- <div class="hero-bg-glow"></div> -->
+
+      <!-- Vertical Beams for premium visual effect -->
+      <div class="beam-container beam-left">
+        <div class="beam animate-beam"></div>
+      </div>
+      <div class="beam-container beam-right">
+        <div class="beam animate-beam" style="animation-delay: 2.5s"></div>
+      </div>
+
+      <!-- Background Massive Title -->
+      <div class="hero-title-container animate-in parallax-header">
+        <span class="hero-title-small">Se torne um web designer do</span>
+        <h1 class="hero-title-big">FUTURO</h1>
+      </div>
+
+      <!-- Video Animation Overlay (mix-blend-mode screen drops black background) -->
+      <div class="hero-photo-wrapper animate-in animate-in-delay-1">
+        <img src="images/frame_0042.webp" id="hero-placeholder" class="hero-placeholder" alt="Hero Placeholder" width="900" height="864">
+        <canvas id="scroll-canvas" class="hero-photo loading-canvas"></canvas>
+      </div>
+
+      <div class="container">
+        <div class="hero-inner">
+
+
+          <!-- Centered Content -->
+          <div class="hero-content animate-in animate-in-delay-2 parallax-body">
+
+            <div class="hero-badge">
+              <span class="pulse-dot"></span>
+              <span>PIONEIROS DA NOVA ERA</span>
+            </div>
+
+            <p class="hero-subtitle">
+              Pare de vender páginas estáticas genéricas e comece a vender Páginas High Ticket nível Apple.
+            </p>
+
+            <p class="hero-description">
+              Fuja da guerra de preços do mercado estático e domine a nova era: crie verdadeiras <em>experiências
+                imersivas</em> com Agentes de IA.
+            </p>
+
+            <ul class="hero-features">
+              <li class="hero-feature-item">
+                <iconify-icon icon="solar:star-fall-minimalistic-bold-duotone" class="feature-icon"></iconify-icon>
+                <span><strong>Método Inovador</strong></span>
+              </li>
+              <li class="hero-feature-item">
+                <iconify-icon icon="solar:cpu-bolt-bold-duotone" class="feature-icon"></iconify-icon>
+                <span><strong>Páginas 100% com IA</strong></span>
+              </li>
+              <li class="hero-feature-item">
+                <iconify-icon icon="solar:crown-minimalistic-bold-duotone" class="feature-icon"></iconify-icon>
+                <span><strong>Arsenal High Ticket</strong></span>
+              </li>
+            </ul>
+
+            <div class="hero-actions">
+              <!-- Neon Matrix Button V3 -->
+              <a href="#preco" style="text-decoration: none;" class="btn-main-v3-link">
+                <div class="btn-wrapper-v3">
+                  <!-- Spinning Gradient Border -->
+                  <div class="mask-layer-1">
+                    <div class="blur-layer"></div>
+                  </div>
+                  <div class="mask-layer-2">
+                    <div class="animated-border-v3"></div>
+                  </div>
+
+                  <!-- Glitch effect on hover -->
+                  <div class="glitch-overlay"></div>
+
+                  <!-- Button Inner Content -->
+                  <div class="btn-inner">
+                    <div class="btn-text">
+                      Sim, eu quero fazer parte
+                    </div>
+
+                    <svg class="btn-icon-v3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. PROBLEM-AGITATE SECTION -->
+  <section class="problem">
+    <div class="section-divider-beam"></div>
+    <div class="grid-container">
+      <!-- Sidebar Column -->
+      <div class="problem-sidebar">
+        <span class="grid-marker marker-top-left">+</span>
+        <span class="grid-marker marker-top-right">+</span>
+        <span class="grid-marker marker-bottom-left">+</span>
+        <span class="grid-marker marker-bottom-right">+</span>
+
+        <span class="label">/// 01 PROBLEMA</span>
+        <h2 class="headline animate-in">O problema brutal de ignorar os agentes de IA.</h2>
+        <p class="side-text animate-in animate-in-delay-1">
+          Se você continuar entregando o básico, suas habilidades e serviços vão evaporar ou se tornar tão baratos que
+          será quase de graça.
+        </p>
+        <div class="scroll-arrow animate-in animate-in-delay-3">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 5v14M19 12l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Main Content Column -->
+      <div class="problem-content">
+        <!-- Card 1 -->
+        <div class="problem-row border-beam-container animate-in animate-in-delay-1" style="position: relative;">
+          <div class="border-beam"></div>
+          <span class="grid-marker marker-top-right">+</span>
+          <span class="grid-marker marker-bottom-right">+</span>
+
+          <div class="row-meta">
+            <div class="row-icon">
+              <div class="icon-mask icon-dollar"></div>
+            </div>
+            <span class="row-idx">01</span>
+          </div>
+          <div class="row-body">
+            <h3 class="row-title">1. A Guerra de Migalhas</h3>
+            <p class="row-text">Você passa horas montando uma proposta de site só para o cliente responder que "com a IA
+              ele faz mais rápido e mais barato". O seu suor e criatividade não são valorizados porque o cliente
+              simplesmente não enxerga diferença no seu trabalho.</p>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="problem-row border-beam-container animate-in animate-in-delay-2" style="position: relative;">
+          <div class="border-beam"></div>
+          <span class="grid-marker marker-bottom-right">+</span>
+          <div class="row-meta">
+            <div class="row-icon">
+              <div class="icon-mask icon-lock"></div>
+            </div>
+            <span class="row-idx">02</span>
+          </div>
+          <div class="row-body">
+            <h3 class="row-title">2. Reféns do Formato Comum</h3>
+            <p class="row-text">Todo mundo ao seu redor aperta os mesmos botões dos velhos construtores. Aquela página
+              WordPress fria e parecida com todas as outras já não impressiona o consumidor atual, que é cada vez mais
+              exigente — e as agências americanas já perceberam isso.</p>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="problem-row border-beam-container animate-in animate-in-delay-3" style="position: relative;">
+          <div class="border-beam"></div>
+          <span class="grid-marker marker-bottom-right">+</span>
+          <div class="row-meta">
+            <div class="row-icon">
+              <div class="icon-mask icon-shield"></div>
+            </div>
+            <span class="row-idx">03</span>
+          </div>
+          <div class="row-body">
+            <h3 class="row-title">3. A Armadilha Silenciosa</h3>
+            <p class="row-text">Você continua tentando vender exatamente o que todos os outros profissionais entregam.
+              Ao oferecer o "mesmo de sempre", você se torna uma commodity facilmente substituível. Entra em um leilão
+              de preços onde a única forma de ganhar é cobrando menos e trabalhando muito mais.</p>
+          </div>
+        </div>
+
+        <!-- Integrated Footer -->
+        <div class="problem-footer-integrated border-t animate-in animate-in-delay-4">
+          <p class="problem-footer-highlight">Enquanto você briga pelo básico, o mercado de elite já mudou de jogo.</p>
+          <div class="problem-footer-warning">
+            <p><span class="text-danger">E sabe qual é a pior parte?</span> A Inteligência Artificial já faz sites
+              estáticos em 10 segundos. Se você continuar entregando o básico, suas habilidades, seu portfólio e seus
+              serviços vão evaporar.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. A SOLUÇÃO & OPORTUNIDADE -->
+  <section class="solution" id="solution-section">
+    <div class="section-divider-beam"></div>
+    <div class="container overflow-hidden">
+      <div class="solution-split-layout">
+        <!-- Left Column: Headlines -->
+        <div class="solution-header-col">
+          <span class="solution-label">/// 02 SOLUÇÃO</span>
+          <h2 class="solution-headline-large animate-in">VOCÊ SERÁ UM DOS PIONEIROS!</h2>
+          <p class="solution-subheadline animate-in animate-in-delay-1">
+            Enquanto o mercado tradicional se afoga na mesmice e briga por centavos, uma nova elite está sendo formada
+            agora. O segredo? Deixar de ser um "apertador de botões" e se tornar um arquiteto de experiências imersivas.
+          </p>
+        </div>
+
+        <!-- Right Column: Bullets -->
+        <div class="solution-bullets-col">
+          <div class="bullet-list">
+            <div class="bullet-item animate-in animate-in-delay-1">
+              <iconify-icon icon="solar:check-circle-bold-duotone" class="bullet-icon"></iconify-icon>
+              <span>Dominar a tecnologia mais desejada do ano em tempo recorde.</span>
+            </div>
+            <div class="bullet-item animate-in animate-in-delay-2">
+              <iconify-icon icon="solar:check-circle-bold-duotone" class="bullet-icon"></iconify-icon>
+              <span>Criar sem limites criativos e sem precisar digitar código.</span>
+            </div>
+            <div class="bullet-item animate-in animate-in-delay-3">
+              <iconify-icon icon="solar:check-circle-bold-duotone" class="bullet-icon"></iconify-icon>
+              <span>Sair do leilão de preços e fechar projetos de R$ 3k a R$ 5k.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reasoning Box -->
+      <div class="reasoning-box border-beam-container animate-in animate-in-delay-4">
+        <div class="border-beam"></div>
+        <p>Sabe por que você vai vender? <strong>Porque você será o único na sala</strong> capaz de entregar esse tipo
+          de projeto.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3.1 SEÇÃO INTERATIVA: GANHE UM SUPERPODER -->
+  <section class="power-section" id="power-section">
+    <div class="section-divider-beam"></div>
+    <div class="section-divider-beam vertical"></div>
+    <div class="container">
+      <div class="power-grid">
+        <!-- Text Column -->
+        <div class="power-text-col">
+          <h2 class="power-headline-refined animate-in">Ganhe um Superpoder</h2>
+          <p class="power-subheadline-refined animate-in animate-in-delay-1">
+            Aperte para sentir a diferença entre entregar <br>um site comum e uma experiência de elite absoluta.
+          </p>
+
+          <div class="luxury-switch-wrapper animate-in animate-in-delay-2">
+            <div class="power-status-group">
+              <div class="luxury-switch" id="elite-toggle">
+                <div class="luxury-switch-thumb"></div>
+              </div>
+              <span id="power-status-label" class="power-status-text">Status: Site Estático</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Media Column -->
+        <div class="power-media-col animate-in animate-in-delay-3">
+          <div class="media-container border-beam-container" id="power-media-container">
+            <div class="border-beam"></div>
+            <!-- Initial State: Image -->
+            <img src="images/antes.webp" alt="Antes" class="media-preview active" id="media-img" width="960" height="540" loading="lazy">
+
+            <!-- Elite State: YouTube Video (Created on toggle click via JS) -->
+            <div class="video-wrapper" id="media-video">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section-divider-beam bottom-beam"></div>
+  </section>
+
+  <!-- SEÇÃO DE DEPOIMENTOS -->
+  <section class="testimonials" id="depoimentos">
+    <div class="section-divider-beam"></div>
+    <div class="testimonials-grid">
+      <div class="testimonials-sidebar">
+        <div>
+          <span class="testimonials-label">/// DEPOIMENTOS</span>
+          <h2 class="testimonials-headline animate-in">O Que Nossos Alunos Dizem</h2>
+          <p class="testimonials-description animate-in animate-in-delay-1">
+            Feedback real de alunos que passaram pelo treinamento e transformaram sua forma de criar sites.
+          </p>
+        </div>
+        <div class="testimonials-stat">
+          <span class="testimonials-stat-number">100%</span>
+          <div class="testimonials-stars">
+            <svg width="60" height="12" viewBox="0 0 60 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 0L7.34708 4.1459H11.7063L8.17963 6.7082L9.52671 10.8541L6 8.2918L2.47329 10.8541L3.82037 6.7082L0.293661 4.1459H4.65292L6 0Z" fill="#FFC107"></path>
+              <path d="M18 0L19.3471 4.1459H23.7063L20.1796 6.7082L21.5267 10.8541L18 8.2918L14.4733 10.8541L15.8204 6.7082L12.2937 4.1459H16.6529L18 0Z" fill="#FFC107"></path>
+              <path d="M30 0L31.3471 4.1459H35.7063L32.1796 6.7082L33.5267 10.8541L30 8.2918L26.4733 10.8541L27.8204 6.7082L24.2937 4.1459H28.6529L30 0Z" fill="#FFC107"></path>
+              <path d="M42 0L43.3471 4.1459H47.7063L44.1796 6.7082L45.5267 10.8541L42 8.2918L38.4733 10.8541L39.8204 6.7082L36.2937 4.1459H40.6529L42 0Z" fill="#FFC107"></path>
+              <path d="M54 0L55.3471 4.1459H59.7063L56.1796 6.7082L57.5267 10.8541L54 8.2918L50.4733 10.8541L51.8204 6.7082L48.2937 4.1459H52.6529L54 0Z" fill="#FFC107"></path>
+            </svg>
+          </div>
+          <span class="testimonials-stat-label">Satisfação<br>dos Alunos</span>
+        </div>
+      </div>
+      <div class="testimonials-content">
+        <div class="testimonials-fade-left"></div>
+        <div class="testimonials-fade-right"></div>
+
+        <!-- Versão DESKTOP: Uma linha única com todos os 4 depoimentos -->
+        <div class="testimonials-rows-container desktop-only">
+          <div class="testimonials-track">
+            <div class="testimonials-card"><img src="images/frame_1171275331_1x.webp" alt="Depoimento">
+            </div>
+            <div class="testimonials-card"><img src="images/frame_1171275333_1x.webp" alt="Depoimento">
+            </div>
+            <div class="testimonials-card"><img src="images/frame_1171275334_1x.webp" alt="Depoimento">
+            </div>
+            <div class="testimonials-card"><img src="images/frame_1171275335_1x.webp" alt="Depoimento">
+            </div>
+            <!-- Duplicados para loop -->
+            <div class="testimonials-card"><img src="images/frame_1171275331_1x.webp" alt="Depoimento">
+            </div>
+            <div class="testimonials-card"><img src="images/frame_1171275333_1x.webp" alt="Depoimento">
+            </div>
+            <div class="testimonials-card"><img src="images/frame_1171275334_1x.webp" alt="Depoimento">
+            </div>
+            <div class="testimonials-card"><img src="images/frame_1171275335_1x.webp" alt="Depoimento">
+            </div>
+          </div>
+        </div>
+
+        <!-- Versão MOBILE: Duas linhas divididas -->
+        <div class="testimonials-rows-container mobile-only">
+          <div class="testimonials-track track-1">
+            <div class="testimonials-card"><img src="images/frame_1171275331_1x.webp" alt="Depoimento">
+            </div>
+            <div class="testimonials-card"><img src="images/frame_1171275333_1x.webp" alt="Depoimento">
+            </div>
+            <!-- Duplicados -->
+            <div class="testimonials-card"><img src="images/frame_1171275331_1x.webp" alt="Depoimento">
+            </div>
+            <div class="testimonials-card"><img src="images/frame_1171275333_1x.webp" alt="Depoimento">
+            </div>
+          </div>
+          <div class="testimonials-track track-2">
+            <div class="testimonials-card"><img src="images/frame_1171275334_1x.webp" alt="Depoimento">
+            </div>
+            <div class="testimonials-card"><img src="images/frame_1171275335_1x.webp" alt="Depoimento">
+            </div>
+            <!-- Duplicados -->
+            <div class="testimonials-card"><img src="images/frame_1171275334_1x.webp" alt="Depoimento">
+            </div>
+            <div class="testimonials-card"><img src="images/frame_1171275335_1x.webp" alt="Depoimento">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="showcase" id="conteudo">
+    <div class="container">
+      <div class="showcase-header">
+        <span class="showcase-label">/// 03 SHOWCASE</span>
+        <h2 class="showcase-headline animate-in">Veja o nível dos projetos que você vai aprender a criar:</h2>
+        <p class="showcase-subheadline animate-in animate-in-delay-1">Estas são as experiências imersivas que você vai
+          aprender a criar. Páginas que não apenas informam, mas convertem através do deslumbramento.</p>
+      </div>
+    </div>
+
+    <div class="showcase-accordion" id="showcase-accordion">
+      <article class="showcase-item active border-beam-container reveal-hidden" onclick="setActiveShowcase(this)">
+        <div class="border-beam"></div>
+        <div class="video-container-vimeo">
+          <div class="panda-facade" data-panda-id="ec063a92-dceb-45b3-80db-b84fdd53d821"></div>
+        </div>
+        <div class="showcase-info">
+          <span class="showcase-idx">01 // MOTION</span>
+        </div>
+      </article>
+
+      <article class="showcase-item border-beam-container reveal-hidden" onclick="setActiveShowcase(this)">
+        <div class="border-beam"></div>
+        <div class="video-container-vimeo">
+          <div class="panda-facade" data-panda-id="eaf0fa70-b3c1-4171-b461-bd56a63e140c"></div>
+        </div>
+        <div class="showcase-info">
+          <span class="showcase-idx">02 // DESIGN</span>
+        </div>
+      </article>
+
+      <article class="showcase-item border-beam-container reveal-hidden" onclick="setActiveShowcase(this)">
+        <div class="border-beam"></div>
+        <div class="video-container-vimeo">
+          <div class="panda-facade" data-panda-id="44c3d2db-cfbc-439f-be49-92b74a156156"></div>
+        </div>
+        <div class="showcase-info">
+          <span class="showcase-idx">03 // LUXURY</span>
+        </div>
+      </article>
+
+      <article class="showcase-item border-beam-container reveal-hidden" onclick="setActiveShowcase(this)">
+        <div class="border-beam"></div>
+        <div class="video-container-vimeo">
+          <div class="panda-facade" data-panda-id="6de7f594-1e78-4918-bc04-683c97782418"></div>
+        </div>
+        <div class="showcase-info">
+          <span class="showcase-idx">04 // INNOVATION</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+
+  <section class="bonus" id="bonus">
+    <div class="container">
+      <div class="bonus-header">
+        <span class="bonus-label">/// 05 O PACOTE DE ACELERAÇÃO INJUSTA</span>
+        <h2 class="bonus-headline">Ferramentas secretas para você começar no topo.</h2>
+        <p class="bonus-subheadline">Ganhe acesso imediato ao meu arsenal pessoal de ferramentas e assets.</p>
+      </div>
+
+      <div class="bonus-grid">
+        <!-- Bônus 1 -->
+        <article class="bonus-card border-beam-container animate-in">
+          <div class="border-beam"></div>
+          <div class="bonus-video-wrapper">
+            <div class="panda-facade" data-panda-id="623c8a07-84e5-478b-a624-e8380daf159c"></div>
+          </div>
+          <span class="bonus-number">01</span>
+          <h3 class="bonus-title">BIBLIOTECA PREMIUM DE ASSETS</h3>
+          <p class="bonus-description">Componentes validados e de altíssima conversão prontos para plugar. Esqueça o
+            bloqueio criativo, puxe o template, adapte para a IA e o resultado sai em minutos.</p>
+          <div class="bonus-spacer"></div>
+          <span class="bonus-value">VALOR: <strong class="price-highlight"><del>R$ 997</del></strong></span>
+        </article>
+
+        <!-- Bônus 2 -->
+        <article class="bonus-card border-beam-container animate-in animate-in-delay-1">
+          <div class="border-beam"></div>
+          <div class="bonus-video-wrapper">
+            <div class="panda-facade" data-panda-id="9745d6c7-0ec2-40a4-bf6c-b9543b465750"></div>
+          </div>
+          <span class="bonus-number">02</span>
+          <h3 class="bonus-title">UM MÊS GRÁTIS DA FERRAMENTA GRAVYX</h3>
+          <p class="bonus-description">Tenha acesso à ferramenta exclusiva para criar backgrounds imersivos e de
+            altíssimo nível para seus projetos em segundos.</p>
+          <div class="bonus-spacer"></div>
+          <span class="bonus-value">VALOR: <strong class="price-highlight"><del>R$ 79</del></strong></span>
+        </article>
+
+        <!-- Bônus 3 -->
+        <article class="bonus-card border-beam-container animate-in animate-in-delay-2">
+          <div class="border-beam"></div>
+          <div class="bonus-video-wrapper">
+            <div class="panda-facade" data-panda-id="cc230d02-8990-47f0-b215-120f23a71bf8"></div>
+          </div>
+          <span class="bonus-number">03</span>
+          <h3 class="bonus-title">DESIGN SYSTEM: O MODELO MESTRE</h3>
+          <p class="bonus-description">Estruture qualquer projeto web com o rigor técnico dos grandes estúdios do
+            mercado. Padronize cores, tipografia e espaçamento em 4 minutos.</p>
+          <div class="bonus-spacer"></div>
+          <span class="bonus-value">VALOR: <strong class="price-highlight"><del>R$ 297</del></strong></span>
+        </article>
+
+        <!-- Bônus 4 -->
+        <article class="bonus-card border-beam-container animate-in animate-in-delay-3">
+          <div class="border-beam"></div>
+          <div class="bonus-video-wrapper">
+            <div class="panda-facade" data-panda-id="ef64588e-f3ee-40d1-9411-32b416c469a0"></div>
+          </div>
+          <span class="bonus-number">04</span>
+          <h3 class="bonus-title">ACESSO ÀS MINHAS PRINCIPAIS SKILLS</h3>
+          <p class="bonus-description">Meus "comandos mágicos" treinados. É literalmente copiar minha inteligência
+            artificial particular para replicar meus melhores fluxos.</p>
+          <div class="bonus-spacer"></div>
+          <span class="bonus-value">VALOR: <strong class="price-highlight"><del>R$ 997</del></strong></span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ════ SECTION 06: INVESTIMENTO (LUMINAL RIGOROUS) ════ -->
+  <section class="investment-luminal" id="preco">
+    <div class="investment-luminal-grid">
+      <!-- Left Info Column -->
+      <div class="investment-luminal-left">
+        <div class="investment-luminal-header">
+          <h2 class="investment-luminal-title animate-in">
+            Tenha acesso<br>
+            <span class="italic-text">agora</span> ao método<br>
+            completo.
+          </h2>
+
+          <div class="investment-luminal-desc animate-in animate-in-delay-1">
+            <p>O método completo e todos os bônus exclusivos. Esqueça a briga por centavos e comece a faturar alto com a
+              nova era do Web Design.</p>
+          </div>
+        </div>
+
+        <div class="investment-luminal-meta animate-in animate-in-delay-2">
+          <div class="meta-item">
+            <span class="meta-label">Moeda</span>
+            <span class="meta-value">BRL / USD</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Disponibilidade</span>
+            <span class="meta-value text-emerald">● Vagas Abertas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Pricing Details -->
+      <div class="investment-luminal-right">
+        <!-- Pricing Item 1 -->
+        <div class="investment-luminal-item animate-in">
+          <div class="section-divider-beam"></div>
+          <div class="item-content">
+            <div class="item-text">
+              <span class="item-label">Archive-01 // Core</span>
+              <h3 class="item-title">O Método Completo</h3>
+              <p class="item-desc">Acesso a todas as aulas, atualizações do Web Designer do Futuro por um ano.</p>
+            </div>
+            <div class="item-price"><del>R$ 997</del></div>
+          </div>
+        </div>
+
+        <!-- Pricing Item 2: Bonus 1 -->
+        <div class="investment-luminal-item animate-in animate-in-delay-1">
+          <div class="section-divider-beam"></div>
+          <div class="item-content items-center">
+            <div class="item-text">
+              <span class="item-label">Archive-02 // Bônus Exclusivo</span>
+              <h3 class="item-title">Biblioteca Premium Assets</h3>
+            </div>
+            <div class="item-price"><del>R$ 297</del></div>
+          </div>
+        </div>
+
+        <!-- Pricing Item 3: Bonus 2 -->
+        <div class="investment-luminal-item animate-in animate-in-delay-1">
+          <div class="section-divider-beam"></div>
+          <div class="item-content items-center">
+            <div class="item-text">
+              <span class="item-label">Archive-03 // Ferramenta</span>
+              <h3 class="item-title">1 Mês Grátis Gravyx</h3>
+            </div>
+            <div class="item-price"><del>R$ 97</del></div>
+          </div>
+        </div>
+
+        <!-- Pricing Item 4: Bonus 3 -->
+        <div class="investment-luminal-item animate-in animate-in-delay-1">
+          <div class="section-divider-beam"></div>
+          <div class="item-content items-center">
+            <div class="item-text">
+              <span class="item-label">Archive-04 // Bônus Exclusivo</span>
+              <h3 class="item-title">Templates Design System</h3>
+            </div>
+            <div class="item-price"><del>R$ 497</del></div>
+          </div>
+        </div>
+
+        <!-- Pricing Item 5: Bonus 4 -->
+        <div class="investment-luminal-item animate-in animate-in-delay-1">
+          <div class="section-divider-beam"></div>
+          <div class="item-content items-center">
+            <div class="item-text">
+              <span class="item-label">Archive-05 // Aula Bônus</span>
+              <h3 class="item-title">Minhas Principais Skills</h3>
+            </div>
+            <div class="item-price"><del>R$ 297</del></div>
+          </div>
+        </div>
+
+        <!-- Final Offer Card -->
+        <div class="investment-luminal-offer animate-in animate-in-delay-2">
+          <div class="offer-bg"></div>
+          <div class="offer-content">
+            <div class="offer-text">
+              <img src="images/LOGO.svg" alt="Designer do Futuro" class="offer-logo" loading="lazy">
+              <h3 class="offer-title">Acesso <br>Imediato</h3>
+              <p class="offer-desc">De <del class="text-red">R$ 2.285</del> por apenas:</p>
+            </div>
+
+            <div class="offer-cta-area">
+              <div class="offer-price-display">
+                <span class="price-installments">12x de</span>
+                <div class="price-amount">
+                  <span class="currency">R$</span>
+                  <span class="value">103,11</span>
+                </div>
+                <p class="price-full">OU R$ 997,00 À VISTA</p>              </div>
+
+              <div class="offer-btn-wrapper">
+                <a href="https://checkout.ticto.app/O5F4574E0" style="text-decoration: none;" class="btn-main-v3-link">
+                  <div class="btn-wrapper-v3" style="width: 100%;">
+                    <div class="mask-layer-1">
+                      <div class="blur-layer"></div>
+                    </div>
+                    <div class="mask-layer-2">
+                      <div class="animated-border-v3"></div>
+                    </div>
+                    <div class="glitch-overlay"></div>
+                    <div class="btn-inner">
+                      <div class="btn-text">GARANTIR MEU ACESSO</div>
+                      <svg class="btn-icon-v3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. QUEM VAI TE ENSINAR -->
+  <section class="author" id="author-section">
+    <div class="section-divider-beam"></div>
+    <div class="container">
+      <div class="author-grid">
+        <!-- Photo Column -->
+        <div class="author-photo-col animate-in">
+          <div class="author-photo-wrap">
+            <img src="images/FOTO%20PERFIL.webp" alt="Author Profile Photo" class="author-photo" width="345" height="428" loading="lazy">
+          </div>
+        </div>
+
+        <!-- Content Column -->
+        <div class="author-content-col">
+          <span class="author-label">/// 6.1 QUEM VAI TE ENSINAR</span>
+          <h2 class="author-headline animate-in">Quem vai te ensinar</h2>
+
+          <div class="author-quote animate-in animate-in-delay-1">
+            <p>"Eu percebi que o dinheiro segue tendências, e quem permanece vivo no jogo não é o mais talentoso, mas
+              sim o mais capaz de se adaptar."</p>
+          </div>
+
+          <div class="author-bio animate-in animate-in-delay-2">
+            <p>Há quase 6 anos dominando o mercado e com mais de R$ 500 mil faturados como Designer, eu aprendi que a
+              maior armadilha é se tornar um "apertador de botões" genérico. Minha missão é transformar você em um
+              arquiteto de experiências imersivas, capaz de cobrar o que o seu trabalho realmente vale.</p>
+          </div>
+
+          <div class="authority-pills animate-in animate-in-delay-3">
+            <div class="pill">
+              <iconify-icon icon="solar:check-circle-bold-duotone" class="pill-icon"></iconify-icon>
+              <span>+6 Anos no Mercado</span>
+            </div>
+            <div class="pill">
+              <iconify-icon icon="solar:check-circle-bold-duotone" class="pill-icon"></iconify-icon>
+              <span>+R$ 500k em Faturamento</span>
+            </div>
+            <div class="pill">
+              <iconify-icon icon="solar:check-circle-bold-duotone" class="pill-icon"></iconify-icon>
+              <span>Projetos Top-Tier Atendidos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4.1 GARANTIA -->
+  <section class="guarantee" id="guarantee-section">
+    <div class="section-divider-beam"></div>
+    <div class="container">
+      <div class="guarantee-wrapper animate-in">
+        <div class="guarantee-badge">
+          <div class="badge-icon">
+            <iconify-icon icon="solar:shield-check-bold-duotone" width="80"></iconify-icon>
+          </div>
+          <div class="badge-ring"></div>
+        </div>
+
+        <div class="guarantee-content">
+          <span class="guarantee-label">/// RISCO ZERO</span>
+          <h2 class="guarantee-title">7 Dias de Garantia <br><span class="text-accent">Incondicional</span></h2>
+          <p class="guarantee-text">
+            Eu tiro todo o risco das suas costas. Você tem 7 dias para testar o método, acessar a comunidade e baixar os
+            assets. Se por qualquer motivo você achar que não é para você, basta um único e-mail e eu devolvo 100% do
+            seu
+            investimento. Sem perguntas, sem letras miúdas.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="section-divider-beam bottom-beam"></div>
+  </section>
+
+  <!-- 4.2 FAQ SECTION -->
+  <section class="faq-section" id="faq">
+    <div class="faq-marker-plus top-left">+</div>
+    <div class="faq-marker-plus top-right">+</div>
+    <div class="faq-marker-plus bottom-left">+</div>
+    <div class="faq-marker-plus bottom-right">+</div>
+    <div class="section-divider-beam"></div>
+    <div class="container container-medium">
+      <div class="faq-header animate-in">
+        <span class="faq-label">/// 07 PERGUNTAS FREQUENTES</span>
+        <h2 class="faq-title">Dúvidas Frequentes</h2>
+        <p class="faq-subtitle">Tire suas principais dúvidas sobre o método e comece sua jornada na nova era do design.
+        </p>
+      </div>
+
+      <div class="faq-grid">
+        <!-- Item 1 -->
+        <div class="faq-item animate-in">
+          <div class="faq-border-beam"></div>
+          <div class="faq-mask"></div>
+          <button class="faq-question" aria-expanded="false">
+            <span class="question-text">Quais ferramentas são utilizadas no curso?</span>
+            <iconify-icon icon="solar:alt-arrow-down-linear" class="faq-icon"></iconify-icon>
+          </button>
+          <div class="faq-answer">
+            <div class="answer-inner">
+              <p>95% do curso é feito com ferramentas gratuitas de última geração, como o Google Antigravity e o Gemini.
+                Você aprenderá a extrair o máximo poder dessas IAs sem custos adicionais.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="faq-item animate-in animate-in-delay-1">
+          <div class="faq-border-beam"></div>
+          <div class="faq-mask"></div>
+          <button class="faq-question" aria-expanded="false">
+            <span class="question-text">O curso ensina a prospectar clientes?</span>
+            <iconify-icon icon="solar:alt-arrow-down-linear" class="faq-icon"></iconify-icon>
+          </button>
+          <div class="faq-answer">
+            <div class="answer-inner">
+              <p>Sim! O método não foca apenas na criação. Ensinamos você a montar um portfólio de elite e as
+                estratégias exatas para prospectar e fechar clientes High Ticket (R$ 3k a R$ 5k por projeto).</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="faq-item animate-in animate-in-delay-2">
+          <div class="faq-border-beam"></div>
+          <div class="faq-mask"></div>
+          <button class="faq-question" aria-expanded="false">
+            <span class="question-text">Preciso saber programar para fazer o curso?</span>
+            <iconify-icon icon="solar:alt-arrow-down-linear" class="faq-icon"></iconify-icon>
+          </button>
+          <div class="faq-answer">
+            <div class="answer-inner">
+              <p>Absolutamente não. O foco é design imersivo e uso de Agentes de IA. Você aprenderá a criar experiências
+                incríveis sem precisar digitar uma única linha de código.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Item 4 -->
+        <div class="faq-item animate-in animate-in-delay-3">
+          <div class="faq-border-beam"></div>
+          <div class="faq-mask"></div>
+          <button class="faq-question" aria-expanded="false">
+            <span class="question-text">Quanto tempo tenho de acesso ao conteúdo?</span>
+            <iconify-icon icon="solar:alt-arrow-down-linear" class="faq-icon"></iconify-icon>
+          </button>
+          <div class="faq-answer">
+            <div class="answer-inner">
+              <p>Você terá acesso completo ao curso e a todas as atualizações por um ano a partir da data de inscrição.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Item 5 -->
+        <div class="faq-item animate-in animate-in-delay-4">
+          <div class="faq-border-beam"></div>
+          <div class="faq-mask"></div>
+          <button class="faq-question" aria-expanded="false">
+            <span class="question-text">Existe suporte para tirar dúvidas?</span>
+            <iconify-icon icon="solar:alt-arrow-down-linear" class="faq-icon"></iconify-icon>
+          </button>
+          <div class="faq-answer">
+            <div class="answer-inner">
+              <p>Sim, você terá acesso ao nosso suporte VIP e à nossa comunidade exclusiva de alunos para trocar
+                experiências e tirar dúvidas.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. SECONDARY CTA -->
+  <section class="secondary-cta" id="cta-final">
+    <div class="section-divider-beam"></div>
+    <div class="container container-narrow">
+      <div class="cta-content animate-in text-center">
+        <h2 class="cta-headline">A janela de oportunidade se abriu, mas não ficará aberta para sempre.</h2>
+        <p class="cta-subheadline">Você precisa agir agora, enquanto a <br>maior parte do mercado ainda está dormindo
+          para
+          essa nova onda.</p>
+
+        <div class="cta-action-wrap">
+          <a href="#preco" style="text-decoration: none;" class="btn-main-v3-link">
+            <div class="btn-wrapper-v3">
+              <!-- Spinning Gradient Border -->
+              <div class="mask-layer-1">
+                <div class="blur-layer"></div>
+              </div>
+              <div class="mask-layer-2">
+                <div class="animated-border-v3"></div>
+              </div>
+
+              <!-- Glitch effect on hover -->
+              <div class="glitch-overlay"></div>
+
+              <!-- Button Inner Content -->
+              <div class="btn-inner">
+                <div class="btn-text">
+                  Sim, quero acessar o Método completo agora!
+                </div>
+
+                <svg class="btn-icon-v3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7 17L17 7M17 7H7M17 7V17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. FOOTER -->
+  <footer class="footer">
+    <div class="section-divider-beam"></div>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="images/LOGO.svg" alt="Designer do Futuro" class="footer-logo" width="120" height="34" loading="lazy">
+          <p class="footer-tagline">A nova era do design imersivo.</p>
+        </div>
+
+        <div class="footer-nav">
+          <div class="footer-nav-col">
+            <h4 class="footer-title">Legal</h4>
+            <ul class="footer-links">
+              <li><a href="#">Termos de Uso</a></li>
+              <li><a href="#">Políticas de Privacidade</a></li>
+            </ul>
+          </div>
+          <div class="footer-nav-col">
+            <h4 class="footer-title">Suporte</h4>
+            <ul class="footer-links">
+              <li><a href="#">Contato / Suporte VIP</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="disclaimer">
+          Aviso de Responsabilidade: Este produto não certifica ganho rápido sem esforço. A venda de serviços de alto
+          valor exigirá aplicação das técnicas de prospecção ensinadas. Diferentes pessoas obtêm diferentes resultados.
+          Os resultados dependem da dedicação e aplicação prática dos métodos apresentados.
+        </p>
+        <p class="copyright">© 2032 Web Designer do Futuro. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating WhatsApp Button -->
+  <a href="https://api.whatsapp.com/send?phone=5588992089323&text=Olá,%20gostaria%20de%20tirar%20dúvidas%20sobre%20o%20Web%20Designer%20do%20futuro" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Fale conosco pelo WhatsApp">
+    <iconify-icon icon="ic:baseline-whatsapp"></iconify-icon>
+  </a>
+
+  <!-- TRACKING SCRIPTS (deferred to avoid blocking main thread) -->
+  <script>
+    function loadTracking() {
+      // Meta Pixel
+      !function (f, b, e, v, n, t, s) {
+        if (f.fbq) return; n = f.fbq = function () {
+          n.callMethod ?
+            n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+        };
+        if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+        n.queue = []; t = b.createElement(e); t.async = !0;
+        t.src = v; s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s)
+      }(window, document, 'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1417592776302560');
+      fbq('track', 'PageView');
+
+      // Google Analytics
+      var ga = document.createElement('script');
+      ga.async = true;
+      ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-3CDT1SMFN3';
+      ga.onload = function () {
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-3CDT1SMFN3');
+      };
+      document.head.appendChild(ga);
+
+      // Microsoft Clarity
+      (function (c, l, a, r, i, t, y) {
+        c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+        t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+        y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+      })(window, document, "clarity", "script", "w0s4z28bte");
+    }
+    // Defer all tracking until after page is interactive
+    if (window.requestIdleCallback) {
+      requestIdleCallback(loadTracking);
+    } else {
+      setTimeout(loadTracking, 3000);
+    }
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1417592776302560&ev=PageView&noscript=1" /></noscript>
+
+
+<script src="js/iconify-icon.min.js"></script></body></html>
